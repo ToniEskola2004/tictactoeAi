@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ristinolla</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body>
+    <h1>Ristinolla</h1>
+    <div id="gameContainer">
+        <div class="cell cell0" data-index="0"></div>
+        <div class="cell cell1" data-index="1"></div>
+        <div class="cell cell2" data-index="2"></div>
+        <div class="cell cell3" data-index="3"></div>
+        <div class="cell cell4" data-index="4"></div>
+        <div class="cell cell5" data-index="5"></div>
+        <div class="cell cell6" data-index="6"></div>
+        <div class="cell cell7" data-index="7"></div>
+        <div class="cell cell8" data-index="8"></div>
+        <div class="scoreContainer">
+            <p id="score1">X = 0</p><br>
+            <p id="score2">O = 0</p>
+        </div>
+    </div><br>
+            <button onclick="restart()">Aloita uudestaan</button>
+            <button onclick="reset()">Resetoi</button>    
+        <script src="js/game.js"></script>
+    </body>
+</html>

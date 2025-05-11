@@ -1,0 +1,67 @@
+body {
+    font-family: sans-serif;
+    background-color: hsl(0, 0%, 79%);
+    text-align: center;
+}
+h1 {
+    font-size: 3.5rem;
+}
+#gameContainer {
+    position: relative;
+    margin: auto;
+    width: 450px;
+    height: 450px;
+    color: white;
+    font-size: 8rem;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    background-color: hsl(0, 0%, 20%);
+    padding: 25px;
+    border-radius: 20px;
+}
+.cell0, .cell1, .cell2, .cell3, .cell4, .cell5, .cell6, .cell7, .cell8 {
+    height: 150px;
+    width: 150px;
+    cursor: pointer;
+    text-align: center;
+    margin: auto;
+}
+.cell0, .cell3, .cell6 {
+    border-right: solid 3px;
+}
+.cell2, .cell5, .cell8 {
+    border-left: solid 3px;
+}
+.cell0, .cell1, .cell2 {
+    border-bottom: solid 3px;
+}
+.cell6, .cell7, .cell8 {
+    border-top: solid 3px;
+}
+button {
+    color: white;
+    background-color: hsl(226, 100%, 60%);
+    font-size: 1.5rem;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 16px;
+}
+button:hover {
+    background-color: hsl(226, 100%, 65%);
+}
+button:active {
+    background-color: hsl(226, 100%, 70%);
+}
+.scoreContainer {
+    background-color: hsl(0, 0%, 20%);
+    position: absolute;
+    font-size: 1.5rem;
+    top: 150px;
+    left: 105%;
+    padding: 25px;
+    border-radius: 8px;
+    width: 70px;
+    height: 175px;
+}
