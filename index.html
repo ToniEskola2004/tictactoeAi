@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ristinolla</title>
     <link rel="stylesheet" href="style.css" type="text/css">
 </head>
+
 <body>
     <h1>Ristinolla</h1>
     <div id="gameContainer">
@@ -23,8 +25,12 @@
             <p id="score2">O = 0</p>
         </div>
     </div><br>
-            <button onclick="restart()">Aloita uudestaan</button>
-            <button onclick="reset()">Resetoi</button>    
-        <script src="js/game.js"></script>
-    </body>
+    <button onclick="gameLogic.restart()">Aloita uudestaan</button>
+    <button onclick="gameLogic.reset()">Resetoi</button>
+    <script src="js/game.js" defer></script>
+    <script src="js/minimax.js" defer></script>
+    <script src="js/player.js" defer></script>
+    <script>document.addEventListener("DOMContentLoaded", (event) => { gameLogic = new Game(); })</script>
+</body>
+
 </html>
