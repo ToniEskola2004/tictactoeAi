@@ -41,7 +41,7 @@ class Game {
         this.cells.forEach((cell, i) => cell.textContent = this.boardState[i]);
     }
     reset() {
-        this.scoreval1 , this.scoreval2 = 0;
+        this.scoreval1, this.scoreval2 = 0;
         this.clearGameState();
         this.gameRunning = true;
         if (this.playersIndicator !== this.dominantTrun) {
@@ -60,12 +60,11 @@ class Game {
     checkWinner(boardState) {
         for (var i = 0; i < this.winConditions.length; i++) {
             const statusPerTile = this.winConditions[i].map((tile) => boardState[tile]);
-            if (["x", "o"].includes(statusPerTile[0]) && statusPerTile.every(elem => elem == statusPerTile[0])) {
+            if (["x", "o"].includes(statusPerTile[0]) && statusPerTile.every(elem => elem === statusPerTile[0])) {
                 return true;
-            } else {
-                return false;
             }
         }
+        return false;
     }
     endOfTurn(player) {
         if (this.checkWinner(this.boardState)) {
