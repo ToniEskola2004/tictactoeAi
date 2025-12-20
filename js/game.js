@@ -1,5 +1,7 @@
 class Game {
     constructor(playersIndicator) {
+        this.player1 = "X";
+        this.player2 = "O";
         this.gameContainer = document.getElementById("gameContainer");
         this.score1 = document.getElementById("score1");
         this.score2 = document.getElementById("score2");
@@ -8,8 +10,8 @@ class Game {
         this.cells = this.gameContainer.querySelectorAll(".cell");
         this.cells.forEach((cell) => cell.addEventListener("click", (event) => this.cellClicked(event)));
         this.playersIndicator = playersIndicator;
-        this.dominantTrun = "x";
-        this.turn = this.dominantTrun;
+        this.startingTurn = 1;
+        this.turn = this.startingTurn;
         this.boardState = ["", "", "", "", "", "", "", "", ""];
         this.gameRunning = true;
         this.winConditions = [[0, 1, 2],
@@ -20,47 +22,46 @@ class Game {
         [2, 5, 8],
         [0, 4, 8],
         [2, 4, 6]];
-        if (playersIndicator !== this.dominantTrun) {
+        
+        if (playersIndicator !== this.startingTurn) {
             this.computerPlays()
         }
     }
     changeTurn() {
-        this.turn === "x" ? this.turn = "o" : this.turn = "x";
+        this.turn === 1 ? this.turn = 0 : this.turn = 1;
     }
     isBoardFull(board) {
         if (!board.includes("")) return true;
         else return false;
     }
-    clearGameState() {
+    StartGameState() {
         this.score1.textContent = `X = ${this.scoreval1}`;
         this.score2.textContent = `O = ${this.scoreval2}`;
         this.boardState = ["", "", "", "", "", "", "", "", ""];
         this.updateBoard();
+        this.gameRunning = true;
+        if (this.turn !== this.startingTurn) this.changeTurn();
+        if (this.turn !== this.playersIndicator) this.computerPlays();
     }
     updateBoard() {
-        this.cells.forEach((cell, i) => cell.textContent = this.boardState[i]);
+        this.cells.forEach((cell, i) => 
+        this.boardState[i] === 1 ? cell.textContent = this.player1 : 
+        this.boardState[i] === 0 ? cell.textContent = this.player2 : 
+        cell.textContent = "");
     }
     reset() {
-        this.scoreval1, this.scoreval2 = 0;
-        this.clearGameState();
-        this.gameRunning = true;
-        if (this.playersIndicator !== this.dominantTrun) {
-            this.changeTurn();
-            this.computerPlays()
-        }
+        this.scoreval1 = 0;
+        this.scoreval2 = 0;
+        this.StartGameState();
     }
     restart() {
-        this.clearGameState();
-        this.gameRunning = true;
-        if (this.playersIndicator !== this.dominantTrun) {
-            this.changeTurn();
-            this.computerPlays()
-        }
+        this.StartGameState();
     }
     checkWinner(boardState) {
         for (var i = 0; i < this.winConditions.length; i++) {
             const statusPerTile = this.winConditions[i].map((tile) => boardState[tile]);
-            if (["x", "o"].includes(statusPerTile[0]) && statusPerTile.every(elem => elem === statusPerTile[0])) {
+            // if x or o and all values in array same because we don't want to check for empty
+            if ([1, 0].includes(statusPerTile[0]) && statusPerTile.every(elem => elem === statusPerTile[0])) {
                 return true;
             }
         }
@@ -69,13 +70,13 @@ class Game {
     endOfTurn(player) {
         if (this.checkWinner(this.boardState)) {
             this.gameRunning = false;
-            this.turn === "x" ? this.scoreval1++ : this.scoreval2++;
+            this.turn === 1 ? this.scoreval1++ : this.scoreval2++;
         }
         else if (this.isBoardFull(this.boardState)) {
             this.gameRunning = false;
         } else {
             this.changeTurn();
-            if (player) this.computerPlays(this.boardState);
+            if (player) this.computerPlays();
         }
         this.updateBoard();
     }
@@ -89,44 +90,68 @@ class Game {
         }
     }
     simulate(instance, turn, depth) {
+        let bestScore = 0;
         let score = 0;
         if (this.checkWinner(instance)) {
-            return this.playersIndicator === turn ? 10 - depth : depth - 10;
+            // inverted score given to players because checks for previously simulated actor           
+            return turn === this.playersIndicator ? 8 - depth : depth - 8;
         }
         if (this.isBoardFull(instance)) return 0;
-        for (var i = 0; i < this.boardState.length; i++) {
-            if (instance[i] === "") {
-                instance[i] = turn;
-                if (turn === "x") {
-                    score += this.simulate(instance, "o", depth + 1);
-                } else {
-                    score += this.simulate(instance, "x", depth + 1);
+        if (turn !== this.playersIndicator) {
+            bestScore = -Infinity;
+            for (var i = 0; i < this.boardState.length; i++) {
+                if (instance[i] === "") {
+                    instance[i] = turn;
+                    if (turn === 1) {
+                        score = this.simulate(instance, 0, depth + 1);
+                    } else {
+                        score = this.simulate(instance, 1, depth + 1);
+                    }
+                    instance[i] = "";
+                    if (score > bestScore) bestScore = score;
                 }
-                instance[i] = "";
+            }
+        } else {
+            bestScore = +Infinity;
+            for (var i = 0; i < this.boardState.length; i++) {
+                if (instance[i] === "") {
+                    instance[i] = turn;
+                    if (turn === 1) {
+                        score = this.simulate(instance, 0, depth + 1);
+                    } else {
+                        score = this.simulate(instance, 1, depth + 1);
+                    }
+                    instance[i] = "";
+                    if (score < bestScore) bestScore = score;                   
+                }
             }
         }
-        return score
+
+        return bestScore;
     }
     computerMove(board) {
         if (this.gameRunning && this.turn !== this.playersIndicator) {
+            let scores = [];
             let bestScore = -Infinity;
             let bestMove = 0;
             for (var i = 0; i < this.boardState.length; i++) {
                 if (board[i] === "") {
                     board[i] = this.turn;
-                    let score = this.simulate(board, this.turn, 0);
+                    let score = this.simulate(board, this.turn === 1 ? 0 : 1, 0);
                     board[i] = "";
                     if (score > bestScore) {
                         bestScore = score;
                         bestMove = i;
                     }
+                    scores[i] = score;
                 }
             }
+            console.log(scores);
             return bestMove;
         }
     }
     computerPlays() {
         this.boardState[this.computerMove(this.boardState)] = this.turn;
-        this.endOfTurn(false)
+        this.endOfTurn(false);
     }
 }
