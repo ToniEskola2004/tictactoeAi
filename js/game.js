@@ -1,7 +1,12 @@
 class Game {
     constructor(playersIndicator) {
-        this.player1 = "X";
-        this.player2 = "O";
+        this.player1 = '<i class="fa-solid fa-x"></i>';
+        this.player2 = '<i class="fa-solid fa-o"></i>';
+        if (playersIndicator === 0) {
+            const temp = this.player1;
+            this.player1 = this.player2;
+            this.player2 = temp;
+        }
         this.gameContainer = document.getElementById("gameContainer");
         this.score1 = document.getElementById("score1");
         this.score2 = document.getElementById("score2");
@@ -9,9 +14,7 @@ class Game {
         this.scoreval2 = 0;
         this.cells = this.gameContainer.querySelectorAll(".cell");
         this.cells.forEach((cell) => cell.addEventListener("click", (event) => this.cellClicked(event)));
-        this.playersIndicator = playersIndicator;
-        this.startingTurn = 1;
-        this.turn = this.startingTurn;
+        this.playersIndicator = 1
         this.boardState = ["", "", "", "", "", "", "", "", ""];
         this.gameRunning = true;
         this.winConditions = [[0, 1, 2],
@@ -22,8 +25,13 @@ class Game {
         [2, 5, 8],
         [0, 4, 8],
         [2, 4, 6]];
-        
-        if (playersIndicator !== this.startingTurn) {
+
+        if (document.getElementById("start").checked === true) {
+            this.startingTurn = this.playersIndicator;
+            this.turn = this.startingTurn;
+        } else {
+            this.startingTurn = 0;
+            this.turn = this.startingTurn;
             this.computerPlays()
         }
     }
@@ -44,10 +52,10 @@ class Game {
         if (this.turn !== this.playersIndicator) this.computerPlays();
     }
     updateBoard() {
-        this.cells.forEach((cell, i) => 
-        this.boardState[i] === 1 ? cell.textContent = this.player1 : 
-        this.boardState[i] === 0 ? cell.textContent = this.player2 : 
-        cell.textContent = "");
+        this.cells.forEach((cell, i) =>
+            this.boardState[i] === 1 ? cell.innerHTML = this.player1 :
+                this.boardState[i] === 0 ? cell.innerHTML = this.player2 :
+                    cell.textContent = "");
     }
     reset() {
         this.scoreval1 = 0;
@@ -60,8 +68,8 @@ class Game {
     checkWinner(boardState) {
         for (var i = 0; i < this.winConditions.length; i++) {
             const statusPerTile = this.winConditions[i].map((tile) => boardState[tile]);
-            // if x or o and all values in array same because we don't want to check for empty
-            if ([1, 0].includes(statusPerTile[0]) && statusPerTile.every(elem => elem === statusPerTile[0])) {
+            // if 1 or 0 and all values in array same because we don't want to check for empty
+            if (statusPerTile[0] !== "" && statusPerTile.every(elem => elem === statusPerTile[0])) {
                 return true;
             }
         }
@@ -94,35 +102,27 @@ class Game {
         let score = 0;
         if (this.checkWinner(instance)) {
             // inverted score given to players because checks for previously simulated actor           
-            return turn === this.playersIndicator ? 8 - depth : depth - 8;
+            return turn === this.playersIndicator ? 9 - depth : depth - 9;
         }
         if (this.isBoardFull(instance)) return 0;
-        if (turn !== this.playersIndicator) {
-            bestScore = -Infinity;
-            for (var i = 0; i < this.boardState.length; i++) {
-                if (instance[i] === "") {
-                    instance[i] = turn;
-                    if (turn === 1) {
-                        score = this.simulate(instance, 0, depth + 1);
-                    } else {
-                        score = this.simulate(instance, 1, depth + 1);
-                    }
-                    instance[i] = "";
-                    if (score > bestScore) bestScore = score;
-                }
-            }
-        } else {
+        if (turn === this.playersIndicator) {
             bestScore = +Infinity;
             for (var i = 0; i < this.boardState.length; i++) {
                 if (instance[i] === "") {
                     instance[i] = turn;
-                    if (turn === 1) {
-                        score = this.simulate(instance, 0, depth + 1);
-                    } else {
-                        score = this.simulate(instance, 1, depth + 1);
-                    }
+                    score = this.simulate(instance, 0, depth + 1);
                     instance[i] = "";
-                    if (score < bestScore) bestScore = score;                   
+                    if (score < bestScore) bestScore = score;
+                }
+            }
+        } else {
+            bestScore = -Infinity;
+            for (var i = 0; i < this.boardState.length; i++) {
+                if (instance[i] === "") {
+                    instance[i] = turn;
+                    score = this.simulate(instance, 1, depth + 1);
+                    instance[i] = "";
+                    if (score > bestScore) bestScore = score;
                 }
             }
         }
@@ -137,7 +137,7 @@ class Game {
             for (var i = 0; i < this.boardState.length; i++) {
                 if (board[i] === "") {
                     board[i] = this.turn;
-                    let score = this.simulate(board, this.turn === 1 ? 0 : 1, 0);
+                    let score = this.simulate(board, this.playersIndicator, 0);
                     board[i] = "";
                     if (score > bestScore) {
                         bestScore = score;

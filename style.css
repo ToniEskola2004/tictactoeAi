@@ -38,7 +38,7 @@ h1 {
 .cell6, .cell7, .cell8 {
     border-top: solid 3px;
 }
-button {
+button, .checkbox {
     color: white;
     background-color: hsl(226, 100%, 60%);
     font-size: 1.5rem;
@@ -64,4 +64,8 @@ button:active {
     border-radius: 8px;
     width: 70px;
     height: 175px;
+}
+.startselection {
+    display: flex;
+    flex-direction: column;
 }
