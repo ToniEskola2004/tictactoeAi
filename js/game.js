@@ -40,7 +40,7 @@ class Game {
     }
     isBoardFull(board) {
         if (!board.includes("")) return true;
-        else return false;
+        return false;
     }
     StartGameState() {
         this.score1.textContent = `X = ${this.scoreval1}`;
